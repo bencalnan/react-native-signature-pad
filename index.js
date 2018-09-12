@@ -1,11 +1,13 @@
 'use strict';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import {
-  View,
-  WebView,
-  StyleSheet,
+View,
+WebView,
+StyleSheet,
+ViewPropTypes,
 } from 'react-native';
+import PropTypes from 'prop-types'; 
 
 
 import htmlContent from './injectedHtml';
@@ -19,7 +21,7 @@ class SignaturePad extends Component {
   static propTypes = {
     onChange: PropTypes.func,
     onError: PropTypes.func,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     penColor: PropTypes.string,
     dataURL: PropTypes.string,
   };
@@ -115,11 +117,17 @@ class SignaturePad extends Component {
 
   };
 
+  onMessage = (event) => {
+    var base64DataUrl = JSON.parse(event.nativeEvent.data);
+    this._bridged_finishedStroke(base64DataUrl);
+  };
+
   render = () => {
     return (
         <WebView automaticallyAdjustContentInsets={false}
                  onNavigationStateChange={this._onNavigationChange}
                  renderError={this._renderError}
+                  onMessage={this.onMessage}
                  renderLoading={this._renderLoading}
                  source={this.source}
                  javaScriptEnabled={true}
